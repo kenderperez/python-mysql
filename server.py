@@ -71,6 +71,15 @@ def actualizar(id):
         mysql.connection.commit()
     return redirect(url_for('index'))
 
+@app.route('/buscar', methods=['POST'])
+def Busacar():
+    nombre = request.form['nombre']
+    cursor = mysql.connection.cursor()
+    cursor.execute(f'SELECT * FROM usuario WHERE nombre = "{nombre}"')
+    datos = cursor.fetchall()
+    print(datos)
+    return jsonify(datos)
+
 #obtener los datos en formato json
 @app.route('/getDataJson')
 def getData():
