@@ -20,7 +20,7 @@ def index():
     cursor.execute('SELECT * FROM usuario')
     #LOS GUARDAMOS EN UNA VARIABLE
     datos = cursor.fetchall()
-    return render_template('index.html', data=datos)
+    return render_template('index.html', data = datos)
 
 #RUTA PARA AGREGAR USUARIO
 @app.route('/add', methods=['POST'])
@@ -46,6 +46,32 @@ def Eliminar(id):
     return redirect(url_for('index'))
 
 
+
+@app.route('/edit/<string:id>')
+def Editar(id):
+    cursor = mysql.connection.cursor()
+    cursor.execute(f'SELECT * FROM usuario WHERE id = {id}')
+    datos = cursor.fetchall()
+    return render_template('usuario.html', data = datos)
+
+@app.route('/update/<string:id>', methods=['POST'])
+def actualizar(id):
+    if request.method == "POST":
+        #RECIVIMOS LOS DATOS DEL FORMULARIO
+        nombre = request.form['nombre']
+        email = request.form['email']
+        print(nombre, email, id)
+        #Actualizamos el dato
+        cursor = mysql.connection.cursor()
+        cursor.execute("""UPDATE usuario 
+                            SET nombre = %s,
+                            email = %s 
+                        WHERE id = %s
+                    """, (nombre, email, id))
+        mysql.connection.commit()
+    return redirect(url_for('index'))
+
+#obtener los datos en formato json
 @app.route('/getDataJson')
 def getData():
     #RECIVIMOS LOS DATOS DE MYSQL
